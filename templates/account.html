@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your account</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+  <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+</svg>
+</head>
+<body>
+    {{nickname}}
+    {{user_name}}
+<form method = "POST">
+     <button name = "logout" type="submit" class="btn btn-outline-dark button1 bi bi-arrow-left-square-fill">Log out</button>
+</form>
+{%for i in articles%}
+<h4> Author: {{i.name}}</h4>
+
+<h2> Title: {{i.title}}</h2>
+
+<h7> Text: {{i.text}}</h7>
+    <form method = "POST">
+     <button name = "delete" type="submit" class="btn btn-outline-dark button1 bi bi-arrow-left-square-fill" value="{{i.id}}">Delete</button>
+    </form>
+     <form method = "POST">
+     <button name = "edit" type="submit" class="btn btn-outline-dark button1 bi bi-arrow-left-square-fill" value = "{{i.id}}">Edit</button>
+    </form>
+<hr class="hr" />
+{%endfor%}
+</body>
+</html>

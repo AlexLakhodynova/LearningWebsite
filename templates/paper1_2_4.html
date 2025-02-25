@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Words</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .list-group-item {
+            cursor: pointer;
+        }
+        .selected {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .matched {
+            background-color: #d4edda;
+            color: #155724;
+            pointer-events: none;
+        }
+        .mismatched {
+            background-color: #f8d7da;
+            color: #721c24;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center my-4">Match Words</h2>
+        <p class="text-center">Select one word from each column and click "Check Match" to test your choice.</p>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h4>List 1</h4>
+                <ul id="list1" class="list-group mb-3">
+                    {% for word in list1 %}
+                        <li class="list-group-item" data-value="{{ word }}">{{ word }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h4>List 2</h4>
+                <ul id="list2" class="list-group mb-3">
+                    {% for word in list2 %}
+                        <li class="list-group-item" data-value="{{ word }}">{{ word }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button id="checkMatch" class="btn btn-primary">Check Match</button>
+        </div>
+
+        <div id="result" class="mt-4 text-center"></div>
+        <div id="completeMessage" class="mt-4 text-center d-none">
+            <p class="alert alert-success">All matches are complete! Sending results to the server...</p>
+        </div>
+    </div>
+
+    <script>
+        const list1El = document.getElementById("list1");
+        const list2El = document.getElementById("list2");
+        const checkMatchBtn = document.getElementById("checkMatch");
+        const resultDiv = document.getElementById("result");
+        const completeMessage = document.getElementById("completeMessage");
+
+        let selected1 = null;
+        let selected2 = null;
+        let matches = [];
+        let correctMatches ={};
+
+
+
+        function handleSelection(event, list) {
+            if (event.target.tagName !== "LI") return;
+
+            const selected = list === 1 ? selected1 : selected2;
+            const element = list === 1 ? list1El : list2El;
+
+            if (selected) {
+                selected.classList.remove("selected");
+            }
+
+            event.target.classList.add("selected");
+            if (list === 1) {
+                selected1 = event.target;
+            } else {
+                selected2 = event.target;
+            }
+        }
+
+        function checkMatch() {
+            if (selected1 && selected2) {
+                const word1 = selected1.dataset.value;
+                const word2 = selected2.dataset.value;
+
+                matches.push({ word1, word2 });
+
+                selected1.classList.remove("selected");
+                selected2.classList.remove("selected");
+                selected1 = null;
+                selected2 = null;
+
+                sendResultsToServer();
+            } else {
+                resultDiv.innerHTML = `<div class="alert alert-warning">Please select one word from each column.</div>`;
+                sendResultsToServer();
+            }
+        }
+
+        function sendResultsToServer() {
+            fetch("/english/language_1_2_4", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ matches:matches, correctMatches:correctMatches })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.correct) {
+                    resultDiv.innerHTML = `<div class="alert alert-success">All matches are correct!</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="alert alert-danger">Some matches are incorrect!</div>`;
+                }
+
+                correctMatches = data.correctMatches
+                highlightMatches(data.matches);
+
+                if (data.redirect){
+                    window.location.href= data.redirect;
+                }
+            })
+
+            .catch(error => console.error("Error sending results:", error));
+        }
+
+        function highlightMatches(serverMatches) {
+            serverMatches.forEach(({ word1, word2 }) => {
+                const correctWord2 = correctMatches[word1];
+                const list1Item = Array.from(list1El.children).find(item => item.dataset.value === word1);
+                const list2Item = Array.from(list2El.children).find(item => item.dataset.value === word2);
+
+                if (correctWord2 === word2) {
+                    list1Item?.classList.add("matched");
+                    list2Item?.classList.add("matched");
+                } else {
+                    list1Item?.classList.add("mismatched");
+                    list2Item?.classList.add("mismatched");
+                }
+            });
+        }
+
+        list1El.addEventListener("click", (e) => handleSelection(e, 1));
+        list2El.addEventListener("click", (e) => handleSelection(e, 2));
+        checkMatchBtn.addEventListener("click", checkMatch);
+    </script>
+</body>
+</html>

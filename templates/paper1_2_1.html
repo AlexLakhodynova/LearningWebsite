@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+ <form method = "post">
+<h2>In this task you need to pick one of the .... Choose one of them from the list:,Personification,,Onomatopoeia </h2>
+{%for question in info%}
+<div class="input-group mb-3">
+  <label class="input-group-text " for="inputGroupSelect01">{{question}}</label>
+  <select name = "{{question}}" class="form-select" id="inputGroupSelect01">
+    <option class = "p-3 mb-2 bg-danger text-dark" selected>Choose...</option>
+    <option value="Simile">Simile</option>
+    <option value="Metaphor">Metaphor</option>
+    <option value="Oxymoron">Oxymoron</option>
+      <option value="Hyperbole">Hyperbole</option>
+    <option value="Personification">Personification</option>
+    <option value="Alliteration">Alliteration</option>
+      <option value="Onomatopoeia">Onomatopoeia</option>
+  </select>
+</div>
+{%endfor%}
+
+     {%if result_answers%}
+    {%for answer in result_answers%}
+<div class="form-check">
+  <label class="form-check-label">
+      {{answer.variant}}
+
+  </label>
+
+    <label class="form-check-label">
+        <div class="{{answer.color}}">{{answer.description}}
+        </div>
+  </label>
+</div>
+    {%endfor%}
+    {%endif%}
+
+    <button name = "check" type="submit" class="btn btn-outline-dark button1 ">Check</button>
+    <button name = "next" type="submit" class="btn btn-outline-dark button1 ">Next →</button>
+          </form>
+</body>
+</html>
