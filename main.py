@@ -535,6 +535,6 @@ def results():
 
     return render_template("results.html", total_user_correct_answers = total_user_correct_answers, total_possible_correct_answers = total_possible_correct_answers, user_name = user_name, percentage=percentage)
 
-
+print("hi")
 
 app.run(debug=True)
